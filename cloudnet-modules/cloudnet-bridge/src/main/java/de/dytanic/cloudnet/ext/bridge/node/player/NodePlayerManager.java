@@ -534,6 +534,7 @@ public final class NodePlayerManager extends DefaultPlayerManager implements IPl
     ICloudOfflinePlayer cloudOfflinePlayer = this.getOfflinePlayer(networkConnectionInfo.getUniqueId());
 
     if (cloudOfflinePlayer == null) {
+      // create a new player and cache it, the insert into the database will be done later during the login
       cloudOfflinePlayer = new CloudOfflinePlayer(
         networkConnectionInfo.getUniqueId(),
         networkConnectionInfo.getName(),
@@ -543,10 +544,6 @@ public final class NodePlayerManager extends DefaultPlayerManager implements IPl
         networkConnectionInfo
       );
       this.offlinePlayerCache.put(networkConnectionInfo.getUniqueId(), cloudOfflinePlayer);
-
-      // insert can be async, as the player is now cached
-      this.getDatabase()
-        .insertAsync(cloudOfflinePlayer.getUniqueId().toString(), JsonDocument.newDocument(cloudOfflinePlayer));
     }
 
     return cloudOfflinePlayer;
